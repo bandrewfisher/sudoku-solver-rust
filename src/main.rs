@@ -1,16 +1,18 @@
+use std::time::Instant;
+
 const SIZE: usize = 9;
 type Puzzle = [[u8; SIZE]; SIZE];
 
 fn get_puzzle() -> Puzzle {
-    let puzzle_str = "003020600
-900305001
-001806400
-008102900
-700000008
-006708200
-002609500
-800203009
-005010300";
+    let puzzle_str = "005080700
+700204005
+320000084
+060105040
+008000500
+070803010
+450000091
+600508007
+003010600";
     let mut board = [[0u8; SIZE]; SIZE];
     for (i, line) in puzzle_str.lines().enumerate() {
         for (j, char) in line.chars().enumerate() {
@@ -39,26 +41,65 @@ fn print_puzzle(puzzle: &Puzzle) {
     }
 }
 
-fn is_valid(puzzle: &Puzzle, row: u8, col: u8, possible_num: u8) -> bool {
+fn is_valid(puzzle: &Puzzle, row: usize, col: usize, possible_num: u8) -> bool {
     // Check that it's valid in the row
+    if puzzle[row as usize].contains(&possible_num) {
+        return false;
+    }
 
     // Check that it's valid for the col
+    for i in 0..9 {
+        if puzzle[i][col as usize] == possible_num {
+            return false;
+        }
+    }
 
     // Check that it's valid for the square
-    true
-}
-
-fn solve_puzzle(puzzle: &mut Puzzle) {
-    for (i, row) in puzzle.iter().enumerate() {
-        for (j, num) in row.iter().enumerate() {
-            for possible_num in 1..=9 {
-
+    let box_row_idx = row / 3 * 3;
+    let box_col_idx = col / 3 * 3;
+    for i in 0..3 {
+        for j in 0..3 {
+            if puzzle[box_row_idx + i][box_col_idx + j] == possible_num {
+                return false;
             }
         }
     }
+    true
+}
+
+fn solve_puzzle(puzzle: &mut Puzzle) -> bool {
+    for row in 0..9 {
+        for col in 0..9 {
+            if puzzle[row][col] == 0 {
+                for possible_num in 1..=9 {
+                    if is_valid(puzzle, row, col, possible_num) {
+                        puzzle[row][col] = possible_num;
+                        if solve_puzzle(puzzle) {
+                            return true;
+                        }
+                        puzzle[row][col] = 0; // Backtrack
+                    }
+                }
+                return false; // no valid number, backtrack
+            }
+        }
+    }
+    true
 }
 
 fn main() {
-    let puzzle = get_puzzle();
-    print_puzzle(&puzzle);
+    let mut puzzle = get_puzzle();
+
+    let start = Instant::now();
+    let solved = solve_puzzle(&mut puzzle);
+    let duration = start.elapsed();
+
+    if solved {
+        print_puzzle(&puzzle);
+    } else {
+        println!("No solution found");
+    }
+
+    println!("Solved in {:.6} seconds", duration.as_secs_f64());
+
 }
