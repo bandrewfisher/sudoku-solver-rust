@@ -21,7 +21,7 @@ a 0.
 `cat puzzles/puzzle_01.txt | cargo run`
 
 ## Example output
-
+```
 2 4 5 | 9 8 1 | 3 7 6
 1 6 9 | 2 7 3 | 5 8 4
 8 3 7 | 5 6 4 | 2 1 9
@@ -34,3 +34,4 @@ a 0.
 7 2 8 | 3 4 9 | 1 6 5
 6 5 4 | 8 1 2 | 7 9 3
 Solved in 0.000182 seconds
+```
