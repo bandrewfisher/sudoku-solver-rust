@@ -1,22 +1,17 @@
+use std::io::{self, BufRead};
 use std::time::Instant;
 
 const SIZE: usize = 9;
 type Puzzle = [[u8; SIZE]; SIZE];
 
 fn get_puzzle() -> Puzzle {
-    let puzzle_str = "005080700
-700204005
-320000084
-060105040
-008000500
-070803010
-450000091
-600508007
-003010600";
+    let stdin = io::stdin();
     let mut board = [[0u8; SIZE]; SIZE];
-    for (i, line) in puzzle_str.lines().enumerate() {
-        for (j, char) in line.chars().enumerate() {
-            board[i][j] = char.to_digit(10).unwrap() as u8;
+
+    for (i, line) in stdin.lock().lines().enumerate().take(SIZE) {
+        let line = line.expect("Failed to read line");
+        for (j, ch) in line.chars().enumerate().take(SIZE) {
+            board[i][j] = ch.to_digit(10).expect("Invalid digit") as u8;
         }
     }
 
